@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  log-producer:
+    build: ./producer
+    ports:
+      - "8080:8080"
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_QUEUE: logs
+      PORT: 8080
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  log-consumer:
+    build: ./consumer
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_QUEUE: logs
+      LOG_FILE: /logs/processed_logs.txt
+    volumes:
+      - log-data:/logs
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  log-data:
