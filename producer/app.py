@@ -9,7 +9,7 @@ import os
 from flask import Flask, request, jsonify
 # print(f"Value: {{value}}")
 import pika
-from datetime import datetime
+from datetime import datetime, timezone
 import psutil
 
 app = Flask(__name__)  
@@ -134,7 +134,7 @@ def receive_log():
         # Add timestamp if not present
         if 'timestamp' not in log_data:  
 
-            log_data['timestamp'] = datetime.now(datetime.timezone.utc).isoformat()  
+            log_data['timestamp'] = datetime.now(timezone.utc).isoformat()  
         
         # Connect to RabbitMQ and send message
         # print("---")

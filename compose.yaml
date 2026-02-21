@@ -3,9 +3,13 @@ version: '3'
 services:
   rabbitmq:
     image: rabbitmq:3-management
+    user: "999:999"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_ERLANG_COOKIE: mysecretcookie123
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
     healthcheck:
       test: rabbitmq-diagnostics -q ping
       interval: 10s
@@ -40,3 +44,4 @@ services:
 
 volumes:
   log-data:
+  rabbitmq-data:
